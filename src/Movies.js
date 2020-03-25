@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import './Movies.css'
 
@@ -14,7 +14,7 @@ function Movies({ id, year, title, title_long, summary, poster, genres, rating }
                 <p className="movie-para">{summary.slice(0, 140)}...</p>
                 <ul className="genres">
                     {
-                        genres.map( (genre, i) => <li className="item" key={i}>{genre}</li>)
+                        genres.map( (genre, index) => <li className="item" key={index}>{genre}</li>)
                     }
                 </ul>
             </article>
