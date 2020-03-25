@@ -1,75 +1,62 @@
 import React from 'react';
-import PropTypes from 'prop-types';
+import Axios from 'axios';
+import Movies from './Movies';
+import Loader from './Loader';
+import './App.css'
 
-const foodILike = [
-  {
-    id: 1,
-    name: "Kimchi",
-    image:
-      "http://aeriskitchen.com/wp-content/uploads/2008/09/kimchi_bokkeumbap_02-.jpg",
-    rating: 1
-  },
-  {
-    id: 2,
-    name: "Samgyeopsal",
-    image:
-      "https://3.bp.blogspot.com/-hKwIBxIVcQw/WfsewX3fhJI/AAAAAAAAALk/yHxnxFXcfx4ZKSfHS_RQNKjw3bAC03AnACLcBGAs/s400/DSC07624.jpg",
-      rating: 3.4
-  },
-  {
-    id: 3,
-    name: "Bibimbap",
-    image:
-      "http://cdn-image.myrecipes.com/sites/default/files/styles/4_3_horizontal_-_1200x900/public/image/recipes/ck/12/03/bibimbop-ck-x.jpg?itok=RoXlp6Xb",
-    rating: 4.8
-  },
-  {
-    id: 4,
-    name: "Doncasu",
-    image:
-      "https://s3-media3.fl.yelpcdn.com/bphoto/7F9eTTQ_yxaWIRytAu5feA/ls.jpg",
-      rating: 2.8
-  },
-  {
-    id: 5,
-    name: "Kimbap",
-    image:
-      "http://cdn2.koreanbapsang.com/wp-content/uploads/2012/05/DSC_1238r-e1454170512295.jpg",
-     rating: 3.6
-  }
-];
+class App extends React.Component {
+  state = {
+    isLoading : true,
+    movie : []
+  };
 
-function Food({name, picture, rating}) {
-  return (
-    <div>
-      <p>I love {name}.</p>
-      <small>rating : {rating}/5</small>
-      <figure><img src={picture} alt={name} /></figure>
-    </div>
-  );
-}
-
-Food.propTypes = {
-  name: PropTypes.string.isRequired,
-  picture: PropTypes.string.isRequired,
-  rating: PropTypes.number
-};
-
-function RenderFood(dish) {
-  return (
-    <Food key={dish.id} name={dish.name} picture={dish.image} rating={dish.rating} />
-  )
-}
-
-function App() {
-  return (
-    <div className="App">
-      <h1>hello!</h1>
-      {
-        foodILike.map( RenderFood )
+  getMovies = async () => {
+    const {
+      data: {
+        data : {
+          movies
+        }
       }
-    </div>
-  );
+    } = await Axios.get('https://yts-proxy.now.sh/list_movies.json?sort_by=rating');
+    console.log(movies);
+    
+    this.setState({
+      movies,
+      isLoading : false
+    });
+    
+  }
+  componentDidMount() {
+    this.getMovies();
+  }
+  render(){
+    const {isLoading, movies} = this.state;
+    return (
+      <section className="app">
+        <h1 className="title-top">movies list</h1>
+        <div className="movie-wrap">
+          { isLoading ? 
+              <Loader/>
+            : movies.map(data => {
+              return (
+                <Movies
+                  key={data.id}
+                  title={data.title}
+                  id={data.id}
+                  year={data.year}
+                  title_long={data.title_long}
+                  summary={data.summary}
+                  poster={data.medium_cover_image}
+                  genres={data.genres}
+                  rating={data.rating}
+                />
+              );
+            })
+          }
+        </div>
+      </section>
+    );
+  }
 }
 
 export default App;
